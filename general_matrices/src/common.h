@@ -11,8 +11,6 @@
 #include <iostream>
 #include <sstream>
 
-#define DIMENSION 2
-
 void trap(const std::string& msg);
 
 std::string str(int i);
@@ -22,7 +20,7 @@ std::string str(int i);
 
 
 
-#if 0
+/*
 
 q[2,1]      =  (q[2,2]*a[2,1]*q[1,1]+q[2,2]*a[2,2]*q[1,2]) / (a[1,1]+a[1,2])
 
@@ -45,5 +43,4 @@ q(2,1) = -(q(2,2)*a(2,1)*q(1,1)+q(2,2)*a(2,2)*q(1,2)) / (a(1,1)+a(1,2))
 q * a * q'
 
 
-
-#endif
+*/

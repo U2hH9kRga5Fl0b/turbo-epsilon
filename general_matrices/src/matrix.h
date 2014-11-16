@@ -12,13 +12,20 @@
 
 #include "elems/elem.h"
 
+#include "elems/all_expressions.h"
+
 class matrix
 {
 public:
-	elem elems[DIMENSION * DIMENSION];
+	int rows, cols;
+	expression **elems;
 
-	matrix();
-	matrix(const std::string& name);
+	matrix(const std::string& name, int rows, int cols);
+///	matrix(const char *name, int rows, int cols) : matrix(std::string{name}, rows, cols) {}
+	~matrix();
+
+	matrix(const matrix& other);
+	matrix& operator=(const matrix& other);
 
 	void dontknowcol(int j);
 
@@ -26,9 +33,14 @@ public:
 	void symm();
 	void transpose();
 
-	elem& at(int i, int j);
+	const expression* at(int i, int j) const;
+	expression* at(int i, int j);
+	void set(int i, int j, expression* expr);
+	void set(int idx, expression* expr);
 
 	friend std::ostream& operator<<(std::ostream& out, const matrix& mat);
+
+	void simplify();
 
 	matrix operator *(const matrix& other) const;
 };

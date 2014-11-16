@@ -14,8 +14,8 @@
 int main(int argc, char **argv)
 {
 
-    matrix a {"a"};
-    matrix q {"q"};
+    matrix a {"a", 5, 5};
+    matrix q {"q", 5, 5};
 
 //    for (int i=DIMENSION-1;i<DIMENSION;i++)
 //        a.dontknowcol(i);
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 //    q.at(0,0) = 0;
 //    q.at(1,1) = 0;
 
-    matrix qt;
+    matrix qt{"q", 5, 5};
     qt = q;
     qt.transpose();
     a.hessen();
@@ -37,6 +37,9 @@ int main(int argc, char **argv)
     std::cout << qt << std::endl;
 
     std::cout << q*a << std::endl;
-    std::cout << q*a*qt << std::endl;
+
+    matrix m = q*q*qt;
+    m.simplify();
+    std::cout << m << std::endl;
 }
 

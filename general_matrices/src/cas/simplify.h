@@ -10,7 +10,7 @@
 
 #include "../elems/expression.h"
 
-void simply_expression(expression* expr);
+expression* simplify_expression(expression* expr);
 
 
 #endif /* SIMPLIFY_H_ */

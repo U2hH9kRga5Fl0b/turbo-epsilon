@@ -13,6 +13,8 @@
 
 #include "arithmetic.h"
 #include "variable.h"
+#include "constant.h"
+
 
 
 #endif /* ALL_EXPRESSIONS_H_ */

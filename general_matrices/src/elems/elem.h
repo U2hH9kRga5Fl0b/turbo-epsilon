@@ -10,13 +10,8 @@
 
 #include "../common.h"
 
-enum element_type
-{
-	REAL_TYPE,
-	COMPLEX_TYPE,
-	ERROR_TYPE,
-	INTERVAL_TYPE,
-};
+
+
 
 class elem
 {
@@ -38,5 +33,7 @@ public:
 	    elem operator* (const elem& other) const;
 	    elem operator+ (const elem& other) const;
 };
+
+
 
 #endif /* ELEM_H_ */
