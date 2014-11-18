@@ -9,7 +9,10 @@
 #define NEGATION_H_
 
 
-
+expr_ptr simplify_neg(Negation&& neg, bool& changed)
+{
+	return expr_ptr{neg.release()};
+}
 
 
 #endif /* NEGATION_H_ */

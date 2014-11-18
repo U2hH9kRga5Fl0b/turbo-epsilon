@@ -48,11 +48,11 @@ enum expr_type
 std::string type_name(expr_type t);
 
 
-class expression
+class expression_raw
 {
 public:
-	expression();
-	virtual ~expression();
+	expression_raw();
+	virtual ~expression_raw();
 
 	std::string get_text() const
 	{
@@ -61,26 +61,27 @@ public:
 		return ss.str();
 	}
 
-	expression& operator=(const expression& other) = delete;
+	expression_raw(const expression_raw& other) = delete;
+	expression_raw& operator=(const expression_raw& other) = delete;
 
 	virtual std::ostream& append_text(std::ostream& out) const;
 	virtual std::ostream& append_latex(std::ostream& out) const;
 	virtual std::ostream& append_matlab(std::ostream& out) const;
 
 	virtual expr_type get_type() const = 0;
-	virtual expression* clone() const = 0;
+	virtual std::unique_ptr<expression_raw> clone() const = 0;
 
-	expression* operator*(const expression* other) const;
-	expression* operator/(const expression* other) const;
+	std::unique_ptr<expression_raw> operator*(const std::unique_ptr<expression_raw>& other) const;
+	std::unique_ptr<expression_raw> operator/(const std::unique_ptr<expression_raw>& other) const;
 
-	expression* operator+(const expression* other) const;
-	expression* operator-(const expression* other) const;
+	std::unique_ptr<expression_raw> operator+(const std::unique_ptr<expression_raw>& other) const;
+	std::unique_ptr<expression_raw> operator-(const std::unique_ptr<expression_raw>& other) const;
 
 
 //	virtual void set(const expression* other) const = 0;
-
-
 //	expression* operator=(const expression* other);
 };
+
+typedef std::unique_ptr<expression_raw> expr_ptr;
 
 #endif /* EXPRESSION_H_ */

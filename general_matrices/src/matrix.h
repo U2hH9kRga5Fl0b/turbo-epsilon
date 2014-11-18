@@ -18,10 +18,9 @@ class matrix
 {
 public:
 	int rows, cols;
-	expression **elems;
+	expr_ptr *elems;
 
 	matrix(const std::string& name, int rows, int cols);
-///	matrix(const char *name, int rows, int cols) : matrix(std::string{name}, rows, cols) {}
 	~matrix();
 
 	matrix(const matrix& other);
@@ -32,15 +31,26 @@ public:
 	void hessen();
 	void symm();
 	void transpose();
+	matrix inv();
+	expr_ptr det();
 
-	const expression* at(int i, int j) const;
-	expression* at(int i, int j);
-	void set(int i, int j, expression* expr);
-	void set(int idx, expression* expr);
+	const expr_ptr& at(int i, int j) const;
+	expr_ptr& at(int i, int j);
+	void set(int i, int j, expr_ptr& expr);
+	void set(int idx, expr_ptr& expr);
+	void set(int i, int j, expr_ptr&& expr);
+	void set(int idx, expr_ptr&& expr);
 
 	friend std::ostream& operator<<(std::ostream& out, const matrix& mat);
 
 	void simplify();
+
+
+	expr_ptr dot(int col1, int col2) const;
+
+	std::ostream& append_text(std::ostream& out);
+	std::ostream& append_latex(std::ostream& out);
+	std::ostream& append_matlab(std::ostream& out);
 
 	matrix operator *(const matrix& other) const;
 };

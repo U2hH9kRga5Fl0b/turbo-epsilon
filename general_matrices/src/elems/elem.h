@@ -28,6 +28,7 @@ public:
 	    bool is_one() const;
 	    bool is_zero() const;
 	    bool is_unknown() const;
+
 	    elem& operator=(int val);
 	    elem& operator=(const std::string& val);
 	    elem operator* (const elem& other) const;

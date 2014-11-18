@@ -11,18 +11,18 @@
 
 #include "expression.h"
 
-struct interval : public expression
+struct interval : public expression_raw
 {
-	expression* lower;
-	expression* upper;
+	expr_ptr lower;
+	expr_ptr upper;
 };
 
 
 
 
-struct ieee : public expression
+struct ieee : public expression_raw
 {
-	expression* value;
+	expr_ptr value;
 	bool epsilon;
 };
 

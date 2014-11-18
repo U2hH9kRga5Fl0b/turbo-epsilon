@@ -10,7 +10,9 @@
 
 #include "../elems/expression.h"
 
-expression* simplify_expression(expression* expr);
+expr_ptr recursive_apply(expr_ptr& expr, expr_ptr (func)(expr_ptr& expr, bool&), bool& mod);
 
+expr_ptr simplify_expression(expr_ptr& expr);
+expr_ptr simplify_expression(expr_ptr&& expr);
 
 #endif /* SIMPLIFY_H_ */

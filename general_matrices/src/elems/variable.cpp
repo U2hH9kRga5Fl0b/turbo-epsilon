@@ -6,6 +6,7 @@
  */
 
 #include "variable.h"
+//#include "all_expressions.h"
 
 variable::variable(const std::string& name_) :
 	mat{mat},
@@ -43,7 +44,21 @@ expr_type variable::get_type() const
 	return VARIABLE;
 }
 
-expression* variable::clone() const
+expr_ptr variable::clone() const
 {
-	return new variable { *this };
+	return expr_ptr{new variable { mat, idx1, idx2 }};
+}
+
+bool variable::operator ==(const variable& v)
+{
+	return idx1 == v.idx1 && idx2 == v.idx2 && mat == v.mat;
+}
+
+bool variable::operator ==(const expr_ptr& p)
+{
+	if (p->get_type() != VARIABLE)
+	{
+		return false;
+	}
+	return (*this) == (*      (variable *) (&(*p)));
 }

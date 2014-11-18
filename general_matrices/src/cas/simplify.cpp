@@ -19,65 +19,72 @@ namespace
 	#include "addition.h"
 	#include "subtraction.h"
 	#include "negation.h"
-
-	// default catch case if there is no simplify found in the above rules
-	expression* simplify(expression* expr, bool& mod)
-	{
-		return expr;
-	}
-
-	expression* recursive_apply(expression* expr, expression* (simplifier)(expression*, bool&), bool& mod)
-	{
-		switch(expr->get_type())
-		{
-			case MULT     : { binary*   b=(binary*)   expr; b->first = recursive_apply(b->first, simplifier, mod); b->second = recursive_apply(b->second, simplifier, mod); break; }
-			case DIV      : { binary*   b=(binary*)   expr; b->first = recursive_apply(b->first, simplifier, mod); b->second = recursive_apply(b->second, simplifier, mod); break; }
-			case ADD      : { binary*   b=(binary*)   expr; b->first = recursive_apply(b->first, simplifier, mod); b->second = recursive_apply(b->second, simplifier, mod); break; }
-			case SUB      : { binary*   b=(binary*)   expr; b->first = recursive_apply(b->first, simplifier, mod); b->second = recursive_apply(b->second, simplifier, mod); break; }
-			case EXPO     : { binary*   b=(binary*)   expr; b->first = recursive_apply(b->first, simplifier, mod); b->second = recursive_apply(b->second, simplifier, mod); break; }
-			case LOG      : { binary*   b=(binary*)   expr; b->first = recursive_apply(b->first, simplifier, mod); b->second = recursive_apply(b->second, simplifier, mod); break; }
-			case NEGATE   : { negation* n=(negation*) expr; recursive_apply(n->orig, simplifier, mod); break; }
-			case VARIABLE : { break; }
-			case INTERVAL : { break; }
-			case IEEE     : { break; }
-			case REAL     : { break; }
-			case COMPLEX  : { break; }
-			case ZERO     : { break; }
-			case UNITY    : { break; }
-			case ANYTHING : { break; }
-			case NAN      : { break; }
-			case INFINITY : { break; }
-			default:
-				trap("Unable to simplify expression of type: " + expr->get_text());
-		}
-		return simplifier(expr, mod);
-	}
 }
 
-expression* simplify_an_expression(expression* expr, bool& mod)
+expr_ptr recursive_apply(expr_ptr& expr, expr_ptr (simplifier)(expr_ptr& expr, bool&), bool& mod)
 {
 	switch(expr->get_type())
 	{
-		case REAL    : return simplify((real           *) expr, mod);
-		case COMPLEX : return simplify((complex        *) expr, mod);
-		case MULT    : return simplify((multiplication *) expr, mod);
-		case DIV     : return simplify((division       *) expr, mod);
-		case ADD     : return simplify((addition       *) expr, mod);
-		case SUB     : return simplify((subtraction    *) expr, mod);
-		case EXPO    : return simplify((exponent       *) expr, mod);
-		case NEGATE  : return simplify((negation       *) expr, mod);
-		case VARIABLE: return simplify((variable       *) expr, mod);
-
-		case LOG     : return simplify((expression     *) expr, mod);
-		case INTERVAL: return simplify((expression     *) expr, mod);
-		case IEEE    : return simplify((expression     *) expr, mod);
+		case MULT     : { binary*b=(binary*) expr.release(); expr = Binary{new multiplication{ recursive_apply(b->first, simplifier, mod), recursive_apply(b->second, simplifier, mod) }}; break; }
+		case DIV      : { binary*b=(binary*) expr.release(); expr = Binary{new division      { recursive_apply(b->first, simplifier, mod), recursive_apply(b->second, simplifier, mod) }}; break; }
+		case ADD      : { binary*b=(binary*) expr.release(); expr = Binary{new addition      { recursive_apply(b->first, simplifier, mod), recursive_apply(b->second, simplifier, mod) }}; break; }
+		case SUB      : { binary*b=(binary*) expr.release(); expr = Binary{new subtraction   { recursive_apply(b->first, simplifier, mod), recursive_apply(b->second, simplifier, mod) }}; break; }
+		case EXPO     : { break; }
+		case LOG      : { break; }
+		case NEGATE   : { Negation n{(negation*) expr.release()}; expr = recursive_apply(n->orig, simplifier, mod); break; }
+		case VARIABLE : { break; }
+		case INTERVAL : { break; }
+		case IEEE     : { break; }
+		case REAL     : { break; }
+		case COMPLEX  : { break; }
+		case ZERO     : { break; }
+		case UNITY    : { break; }
+		case ANYTHING : { break; }
+		case NAN      : { break; }
+		case INFINITY : { break; }
 		default:
 			trap("Unable to simplify expression of type: " + expr->get_text());
 	}
-	return expr;
+	return simplifier(expr, mod);
 }
 
-expression* simplify_expression(expression* expr)
+expr_ptr simplify_an_expression(expr_ptr& expr, bool& mod)
+{
+//	expr->append_text(std::cout << "simplifying: ") << std::endl;
+	switch(expr->get_type())
+	{
+		case REAL    : /* return simplify     (Real           {(real           *) expr.release()}, mod); */ break;
+		case COMPLEX : /* return simplify     (Complex        {(complex        *) expr.release()}, mod); */ break;
+		case MULT    :    return  simplify_mult(Multiplication {(multiplication *) expr.release()}, mod);
+		case DIV     : /* return simplify     (Division       {(division       *) expr.release()}, mod); */ break;
+		case ADD     :    return simplify_add (Addition       {(addition       *) expr.release()}, mod);
+		case SUB     : /* return simplify     (Subtraction    {(subtraction    *) expr.release()}, mod); */ break;
+		case EXPO    : /* return simplify     (Exponent       {(exponent       *) expr.release()}, mod); */ break;
+		case NEGATE  :    return simplify_neg (Negation       {(negation       *) expr.release()}, mod);
+		case VARIABLE: /* return simplify     (Variable       {(variable       *) expr.release()}, mod); */ break;
+
+		case LOG     : /* return simplify     (expr_ptr       {(expression_raw *) expr.release()}, mod); */ break;
+		case INTERVAL: /* return simplify     (expr_ptr       {(expression_raw *) expr.release()}, mod); */ break;
+		case IEEE    : /* return simplify     (expr_ptr       {(expression_raw *) expr.release()}, mod); */ break;
+
+		case ZERO    : /* return expr_ptr{expr.release()};                                               */ break;
+		case UNITY   : /* return expr_ptr{expr.release()};                                               */ break;
+		case ANYTHING: /* return expr_ptr{expr.release()};                                               */ break;
+		case NAN     : /* return expr_ptr{expr.release()};                                               */ break;
+		case INFINITY: /* return expr_ptr{expr.release()};                                               */ break;
+		default:
+			trap("Unable to simplify expression of type: " + expr->get_text());
+	}
+	return expr_ptr{expr.release()};
+}
+
+expr_ptr simplify_expression(expr_ptr&& expr)
+{
+	expr_ptr arg{expr.release()};
+	return simplify_expression(arg);
+}
+
+expr_ptr simplify_expression(expr_ptr& expr)
 {
 
 	bool mod;
@@ -86,5 +93,6 @@ expression* simplify_expression(expression* expr)
 		mod = false;
 		expr = recursive_apply(expr, simplify_an_expression, mod);
 	} while (mod);
-	return expr;
+	return expr_ptr{expr.release()};
 }
+

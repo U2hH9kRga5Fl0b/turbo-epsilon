@@ -12,12 +12,11 @@
 // ()+(-()) = ()-()
 
 
-expression* simplify(addition* a, bool& mod)
+expr_ptr simplify_add(Addition&& a, bool& mod)
 {
 	if (a->first->get_type() == NAN || a->second->get_type() == NAN)
 	{
-		delete a;
-		return new nan;
+		return Nan{new nan};
 	}
 
 	if (a->first->get_type() == INFINITY || a->second->get_type() == INFINITY)
@@ -30,33 +29,29 @@ expression* simplify(addition* a, bool& mod)
 //		}
 //		else
 //		{
-			delete a;
-			return new infinity;
+			return Infinity{new infinity};
 //		}
 	}
 
 	if (a->first->get_type() == ANYTHING || a->second->get_type() == ANYTHING)
 	{
-		delete a;
-		return new anything;
+		return Anything{new anything};
 	}
 
 	if (a->first->get_type() == ZERO)
 	{
-		expression* ret = a->second;
-		a->second = nullptr;
-		delete a;
+		expr_ptr ret {a->second.release()};
+		a->first = nullptr;
 		return ret;
 	}
 	if (a->second->get_type() == ZERO)
 	{
-		expression* ret = a->first;
+		expr_ptr ret {a->first.release()};
 		a->first = nullptr;
-		delete a;
 		return ret;
 	}
 
-	return a;
+	return expr_ptr{a.release()};
 }
 
 

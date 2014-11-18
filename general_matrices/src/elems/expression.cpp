@@ -36,41 +36,41 @@ std::string type_name(expr_type t)
 	return "unknown type";
 }
 
-expression::expression() {}
+expression_raw::expression_raw() {}
 
-expression::~expression() {}
+expression_raw::~expression_raw() {}
 
-expression* expression::operator *(const expression* other) const
+expr_ptr expression_raw::operator *(const expr_ptr& other) const
 {
-	return new multiplication{clone(), other->clone()};
+	return expr_ptr{new multiplication{clone(), other->clone()}};
 }
 
-expression* expression::operator /(const expression* other) const
+expr_ptr expression_raw::operator /(const expr_ptr& other) const
 {
-	return new division{clone(), other->clone()};
+	return expr_ptr{new division{clone(), other->clone()}};
 }
 
-expression* expression::operator +(const expression* other) const
+expr_ptr expression_raw::operator +(const expr_ptr& other) const
 {
-	return new addition{clone(), other->clone()};
+	return expr_ptr{new addition{clone(), other->clone()}};
 }
 
-expression* expression::operator -(const expression* other) const
+expr_ptr expression_raw::operator -(const expr_ptr& other) const
 {
-	return new subtraction{clone(), other->clone()};
+	return expr_ptr{new subtraction{clone(), other->clone()}};
 }
 
-std::ostream& expression::append_text(std::ostream& out) const
+std::ostream& expression_raw::append_text(std::ostream& out) const
 {
 	return out << "text not implemented for type " << type_name(get_type());
 }
 
-std::ostream& expression::append_latex(std::ostream& out) const
+std::ostream& expression_raw::append_latex(std::ostream& out) const
 {
 	return out << "latex not implemented for type " << type_name(get_type());
 }
 
-std::ostream& expression::append_matlab(std::ostream& out) const
+std::ostream& expression_raw::append_matlab(std::ostream& out) const
 {
 	return out << "matlab not implemented for type " << type_name(get_type());
 }

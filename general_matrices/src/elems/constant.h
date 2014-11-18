@@ -10,12 +10,12 @@
 
 #include "expression.h"
 
-struct real: public expression
+struct real: public expression_raw
 {
 	real (double v) : val{v} {}
 
 	expr_type get_type() const { return REAL; }
-	expression* clone() const { return new real{*this}; }
+	expr_ptr clone() const { return expr_ptr{new real{val}}; }
 
 	std::ostream& append_text(std::ostream& out) const
 	{
@@ -31,7 +31,7 @@ struct real: public expression
 	{
 		return out << val;
 	}
-
+#if 0
 	inline real operator*(const real& other) const
 	{
 		return real { val * other.val };
@@ -51,11 +51,12 @@ struct real: public expression
 	{
 		return real { val - other.val };
 	}
+#endif
 
 	double val;
 };
 
-struct complex: public expression
+struct complex: public expression_raw
 {
 	complex (double r, double i) : real{r}, imaginary{i} {}
 
@@ -75,8 +76,9 @@ struct complex: public expression
 	}
 
 	expr_type get_type() const { return COMPLEX; }
-	expression* clone() const { return new complex{*this}; }
+	expr_ptr clone() const { return expr_ptr{new complex{real, imaginary}}; }
 
+#if 0
 	inline complex operator*(const complex& other) const
 	{
 		return complex {
@@ -100,13 +102,13 @@ struct complex: public expression
 	{
 		return complex { real - other.real, imaginary - other.imaginary };
 	}
-
+#endif
 
 	double real;
 	double imaginary;
 };
 
-class special_constant : public expression
+class special_constant : public expression_raw
 {
 	virtual std::ostream& append_latex(std::ostream& out) const { return append_text(out); }
 	virtual std::ostream& append_matlab(std::ostream& out) const { return append_text(out); }
@@ -117,14 +119,14 @@ class zero: public special_constant
 	std::ostream& append_text(std::ostream& out) const { return out << "0"; }
 
 	expr_type get_type() const { return ZERO; };
-	expression* clone() const {return new zero{}; };
+	expr_ptr clone() const {return expr_ptr{new zero}; };
 };
 class unity: public special_constant
 {
 	std::ostream& append_text(std::ostream& out) const { return out << "1"; }
 
 	expr_type get_type() const { return UNITY; };
-	expression* clone() const { return new unity{}; };
+	expr_ptr clone() const {return expr_ptr{new unity}; };
 };
 class anything: public special_constant
 {
@@ -132,14 +134,14 @@ class anything: public special_constant
 //	std::ostream& append_matlab(std::ostream& out) const { return out << "rand()"; }
 
 	expr_type get_type() const { return ANYTHING; };
-	expression* clone() const {return new anything{}; };
+	expr_ptr clone() const {return expr_ptr{new anything}; };
 };
 class nan: public special_constant
 {
 	std::ostream& append_text(std::ostream& out) const { return out << "NAN"; }
 
 	expr_type get_type() const { return NAN; };
-	expression* clone() const {return new nan{}; };
+	expr_ptr clone() const {return expr_ptr{new nan}; };
 };
 class infinity: public special_constant
 {
@@ -147,7 +149,7 @@ class infinity: public special_constant
 	std::ostream& append_latex(std::ostream& out) const { return out << "\\inf"; }
 
 	expr_type get_type() const { return INFINITY; };
-	expression* clone() const {return new infinity{}; };
+	expr_ptr clone() const {return expr_ptr{new infinity}; };
 };
 
 

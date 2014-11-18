@@ -8,12 +8,11 @@
 #ifndef MULTIPLICATION_H_
 #define MULTIPLICATION_H_
 
-expression* simplify(multiplication* m, bool& mod)
+expr_ptr simplify_mult(Multiplication&& m, bool& mod)
 {
 	if (m->first->get_type() == NAN || m->second->get_type() == NAN)
 	{
-		delete m;
-		return new nan;
+		return Nan{new nan};
 	}
 
 	if (m->first->get_type() == INFINITY || m->second->get_type() == INFINITY)
@@ -21,44 +20,38 @@ expression* simplify(multiplication* m, bool& mod)
 		// Could be zero, even if it is not ZERO
 		if (m->first->get_type() == ZERO || m->second->get_type() == ZERO)
 		{
-			delete m;
-			return new nan;
+			return Nan{new nan};
 		}
 		else
 		{
-			delete m;
-			return new infinity;
+			return Infinity{new infinity};
 		}
 	}
 
 	if (m->first->get_type() == ANYTHING || m->second->get_type() == ANYTHING)
 	{
-		delete m;
-		return new anything;
+		return Anything{new anything};
 	}
 
 	if (m->first->get_type() == UNITY)
 	{
-		expression* ret = m->second;
+		expr_ptr ret {m->second.release()};
 		m->second = nullptr;
-		delete m;
 		return ret;
 	}
 	if (m->second->get_type() == UNITY)
 	{
-		expression* ret = m->first;
+		expr_ptr ret {m->first.release()};
 		m->first = nullptr;
-		delete m;
 		return ret;
 	}
 
 	if (m->first->get_type() == ZERO || m->second->get_type() == ZERO)
 	{
-		delete m;
-		return new zero { };
+		return Zero{new zero};
 	}
 
-	return m;
+	return expr_ptr{m.release()};
 }
 
 #endif /* MULTIPLICATION_H_ */
